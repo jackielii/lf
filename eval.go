@@ -2079,7 +2079,7 @@ func (e *callExpr) eval(app *app, args []string) {
 		app.ui.cmdAccLeft = acc
 		update(app)
 	case "list-maps":
-		stdin, cleanUp := app.runShellPipeIn("$PAGER", nil)
+		stdin, cleanUp := app.runShellPipeIn(envPager, nil)
 		io.Copy(stdin, listBinds(gOpts.keys))
 		stdin.Close()
 		cleanUp()
@@ -2088,7 +2088,7 @@ func (e *callExpr) eval(app *app, args []string) {
 		if err != nil {
 			app.ui.echoerrf("buffers: %s", err)
 		}
-		stdin, cleanUp := app.runShellPipeIn("$PAGER", nil)
+		stdin, cleanUp := app.runShellPipeIn(envPager, nil)
 		if len(srcs) == 0 {
 			fmt.Fprintln(stdin, "buffers: empty")
 		} else {
@@ -2107,7 +2107,7 @@ func (e *callExpr) eval(app *app, args []string) {
 		cleanUp()
 	case "list-selections":
 		sels := app.nav.currSelections()
-		stdin, cleanUp := app.runShellPipeIn("$PAGER", nil)
+		stdin, cleanUp := app.runShellPipeIn(envPager, nil)
 		if len(sels) == 0 {
 			fmt.Fprintln(stdin, "selections: empty")
 		} else {
