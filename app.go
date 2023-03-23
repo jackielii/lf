@@ -467,6 +467,9 @@ func (app *app) loop() {
 			app.nav.renew()
 			app.ui.loadFile(app, false)
 			app.ui.draw(app.nav)
+		case <-app.nav.previewTimer.C:
+			app.nav.previewLoading = true
+			app.ui.draw(app.nav)
 		}
 	}
 }
@@ -558,7 +561,11 @@ func (app *app) runShell(s string, args []string, prefix string) {
 		anyKey()
 	}
 
-	app.ui.loadFile(app, true)
+	// Asynchronous shell invocations return immediately without waiting for the
+	// command to finish, so there is no point refreshing the preview if nothing
+	// has changed yet.
+	volatile := prefix != "&"
+	app.ui.loadFile(app, volatile)
 
 	switch prefix {
 	case "%":
